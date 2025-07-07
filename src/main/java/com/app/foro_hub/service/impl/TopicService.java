@@ -12,6 +12,8 @@ import com.app.foro_hub.repository.ITopicRepository;
 import com.app.foro_hub.repository.IUserEntityRepository;
 import com.app.foro_hub.service.ITopicService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -46,6 +48,12 @@ public class TopicService implements ITopicService {
         Topic topic = toEntity(topicRequestDTO);
         Topic savedTopic = topicRepository.save(topic);
         return new TopicResponseDTO(savedTopic);
+    }
+
+    @Override
+    public Page<TopicResponseDTO> findAllTopics(Pageable pageable) {
+        return topicRepository.findAll(pageable)
+                .map(topic -> new TopicResponseDTO(topic));
     }
 
     private Topic toEntity(TopicRequestDTO topicRequestDTO){
