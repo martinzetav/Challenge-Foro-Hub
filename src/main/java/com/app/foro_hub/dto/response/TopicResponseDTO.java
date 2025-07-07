@@ -11,7 +11,7 @@ public record TopicResponseDTO(
         String status,
         LocalDateTime creationDate,
         AuthorDTO author,
-        CourseDTO courseDTO
+        CourseDTO course
 ) {
     public TopicResponseDTO(Topic topic){
         this(
