@@ -3,7 +3,7 @@ package com.app.foro_hub.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -21,7 +21,7 @@ public class Response {
     @JoinColumn(name = "topic_id")
     private Topic topic;
     @Column(name = "creation_date")
-    private LocalDate creationDate;
+    private LocalDateTime creationDate;
     @ManyToOne
     @JoinColumn(name = "author_id")
     private UserEntity author;
