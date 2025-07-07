@@ -31,22 +31,13 @@ public class TopicService implements ITopicService {
     @Override
     @Transactional
     public TopicResponseDTO createTopic(TopicRequestDTO topicRequestDTO) {
-        Course course = courseRepository.findById(topicRequestDTO.courseId())
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "The course with id " + topicRequestDTO.courseId() + " not found."
-                ));
-        UserEntity author = userEntityRepository.findById(topicRequestDTO.userId())
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "The author with id " + topicRequestDTO.userId() + " not found."
-                ));
-
+        validateTopicEntities(topicRequestDTO);
         Optional<Topic> existingTopic = topicRepository.findByTitleAndMessageIgnoreCase(topicRequestDTO.title(),
                 topicRequestDTO.message());
 
         if(existingTopic.isPresent()){
             throw new ResourceAlreadyExistsException("A topic with the same title and message already exists.");
         }
-
         Topic topic = toEntity(topicRequestDTO);
         Topic savedTopic = topicRepository.save(topic);
         return new TopicResponseDTO(savedTopic);
@@ -56,6 +47,56 @@ public class TopicService implements ITopicService {
     public Page<TopicResponseDTO> findAllTopics(Pageable pageable) {
         return topicRepository.findAll(pageable)
                 .map(topic -> new TopicResponseDTO(topic));
+    }
+
+    @Override
+    public TopicResponseDTO findTopicById(Long topicId) {
+        Topic topic = topicRepository.findById(topicId)
+                .orElseThrow(() -> new ResourceNotFoundException("The topic with id " + topicId + " not found."));
+
+        return new TopicResponseDTO(topic);
+    }
+
+    @Override
+    @Transactional
+    public TopicResponseDTO updateTopic(Long topicId, TopicRequestDTO topicRequestDTO) {
+        Topic topic = topicRepository.findById(topicId)
+                .orElseThrow(() -> new ResourceNotFoundException("The topic with id " + topicId + " not found."));
+
+        validateTopicEntities(topicRequestDTO);
+        Optional<Topic> existingTopic = topicRepository.findByTitleAndMessageIgnoreCase(topicRequestDTO.title(),
+                topicRequestDTO.message());
+
+        if(existingTopic.isPresent() && !existingTopic.get().getId().equals(topicId)){
+            throw new ResourceAlreadyExistsException("A topic with the same title and message already exists.");
+        }
+        Topic updatedTopic = toEntity(topicRequestDTO);
+        topic.setTitle(updatedTopic.getTitle());
+        topic.setMessage(updatedTopic.getMessage());
+        topic.setAuthor(updatedTopic.getAuthor());
+        topic.setCourse(updatedTopic.getCourse());
+
+        return new TopicResponseDTO(topic);
+    }
+
+    @Override
+    @Transactional
+    public void deleteTopic(Long topicId) {
+        Topic topic = topicRepository.findById(topicId)
+                .orElseThrow(() -> new ResourceNotFoundException("The topic with id " + topicId + " not found."));
+
+        topicRepository.deleteById(topic.getId());
+    }
+
+    private void validateTopicEntities(TopicRequestDTO topicRequestDTO){
+        Course course = courseRepository.findById(topicRequestDTO.courseId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "The course with id " + topicRequestDTO.courseId() + " not found."
+                ));
+        UserEntity author = userEntityRepository.findById(topicRequestDTO.userId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "The author with id " + topicRequestDTO.userId() + " not found."
+                ));
     }
 
     private Topic toEntity(TopicRequestDTO topicRequestDTO){

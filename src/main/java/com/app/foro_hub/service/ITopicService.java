@@ -8,4 +8,7 @@ import org.springframework.data.domain.Pageable;
 public interface ITopicService {
     TopicResponseDTO createTopic(TopicRequestDTO topicRequestDTO);
     Page<TopicResponseDTO> findAllTopics(Pageable pageable);
+    TopicResponseDTO findTopicById(Long topicId);
+    TopicResponseDTO updateTopic(Long topicId, TopicRequestDTO topicRequestDTO);
+    void deleteTopic(Long topicId);
 }

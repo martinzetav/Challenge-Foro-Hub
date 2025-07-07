@@ -30,9 +30,26 @@ public class TopicController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<TopicResponseDTO>> findAllTopics(@PageableDefault(size = 5, sort = {"creationDate"}, direction = Sort.Direction.DESC)
+    public ResponseEntity<Page<TopicResponseDTO>> findAllTopics(@PageableDefault(size = 10, sort = {"creationDate"}, direction = Sort.Direction.DESC)
                                                                 Pageable pageable){
         return ResponseEntity.ok(topicService.findAllTopics(pageable));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<TopicResponseDTO> findTopicById(@PathVariable Long id){
+        return ResponseEntity.ok(topicService.findTopicById(id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<TopicResponseDTO> updateTopic(@PathVariable Long id,
+                                                        @RequestBody @Valid TopicRequestDTO topicRequestDTO){
+        return ResponseEntity.ok(topicService.updateTopic(id, topicRequestDTO));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTopic(@PathVariable Long id){
+        topicService.deleteTopic(id);
+        return ResponseEntity.noContent().build();
     }
 
 }
