@@ -1,9 +1,11 @@
 package com.app.foro_hub.model;
 
+import com.app.foro_hub.dto.request.TopicRequestDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -20,7 +22,7 @@ public class Topic {
     private String title;
     private String message;
     @Column(name = "creation_date")
-    private LocalDate creationDate;
+    private LocalDateTime creationDate;
     private String status;
     @ManyToOne
     @JoinColumn(name = "author_id")
