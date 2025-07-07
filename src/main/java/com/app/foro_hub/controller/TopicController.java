@@ -5,11 +5,12 @@ import com.app.foro_hub.dto.response.TopicResponseDTO;
 import com.app.foro_hub.service.ITopicService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
@@ -26,6 +27,12 @@ public class TopicController {
         var uri = uriComponentsBuilder.path("/topics/{id}").buildAndExpand(topicResponseDTO.id()).toUri();
         return ResponseEntity.created(uri).body(topicResponseDTO);
 
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<TopicResponseDTO>> findAllTopics(@PageableDefault(size = 5, sort = {"creationDate"}, direction = Sort.Direction.DESC)
+                                                                Pageable pageable){
+        return ResponseEntity.ok(topicService.findAllTopics(pageable));
     }
 
 }
